@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IngreGo - Turn Your Ingredients Into Delicious Recipes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="images/logo.png" alt="IngreGo Logo" class="logo-image">
+                </div>
+                <nav class="nav">
+                    <a href="#" class="nav-link">Home</a>
+                    <a href="#" class="nav-link">Scan</a>
+                    <a href="#" class="nav-link">Meal Planner</a>
+                    <a href="#" class="nav-link">Blog</a>
+                </nav>
+                <div class="header-search">
+                    <input type="text" placeholder="Search Recipe" class="search-input">
+                    <button class="search-btn">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 17C13.4183 17 17 13.4183 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M19 19L14.65 14.65" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="header-auth">
+                    <a href="#" class="sign-up-link">Sign Up</a>
+                    <button class="sign-in-btn">Sign In</button>
+                </div>
+                <button class="mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+        <nav class="mobile-nav">
+            <a href="#" class="mobile-nav-link">Home</a>
+            <a href="#" class="mobile-nav-link">Scan</a>
+            <a href="#" class="mobile-nav-link">Meal Planner</a>
+            <a href="#" class="mobile-nav-link">Blog</a>
+            <a href="#" class="mobile-nav-link">Sign Up</a>
+            <a href="#" class="mobile-nav-link">Sign In</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">Turn Your Ingredients Into Delicious Recipes</h1>
+                    <p class="hero-description">Snap a photo of your ingredients and instantly get personalized recipe suggestions. No more food waste, no more recipe blocks!</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 13C11.6569 13 13 11.6569 13 10C13 8.34315 11.6569 7 10 7C8.34315 7 7 8.34315 7 10C7 11.6569 8.34315 13 10 13Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3 10C3 10 5 6 10 6C15 6 17 10 17 10C17 10 15 14 10 14C5 14 3 10 3 10Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Scan Ingredients
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.5 15L12.5 10L7.5 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <button class="btn btn-secondary">Create Account</button>
+                    </div>
+                </div>
+                <div class="hero-image-wrapper">
+                    <div class="hero-image-frame">
+                        <img src="images/ingrego-header-girl-2.png" alt="Chef with ingredients" class="hero-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Recipes Section -->
+    <section class="featured-recipes">
+        <div class="container">
+            <div class="recipe-cards">
+                <div class="recipe-card">
+                    <div class="recipe-image">
+                        <img src="images/dish-sea-food-spageti.png" alt="Seafood Spaghetti">
+                    </div>
+                    <div class="recipe-info">
+                        <h3 class="recipe-title">Seafood Spaghetti</h3>
+                        <div class="recipe-details">
+                            <span class="recipe-detail">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M8 4V8L10.5 10.5" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                0h 25mins
+                            </span>
+                            <span class="recipe-detail">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 8C9.10457 8 10 7.10457 10 6C10 4.89543 9.10457 4 8 4C6.89543 4 6 4.89543 6 6C6 7.10457 6.89543 8 8 8Z" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M3 14C3 11.7909 5.23858 10 8 10C10.7614 10 13 11.7909 13 14" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                3-4
+                            </span>
+                        </div>
+                        <p class="recipe-description">Rich tomato sauce with fresh seafood</p>
+                    </div>
+                </div>
+
+                <div class="recipe-card">
+                    <div class="recipe-image">
+                        <img src="images/poke-bowl.png" alt="Poke Bowl">
+                    </div>
+                    <div class="recipe-info">
+                        <h3 class="recipe-title">Poke Bowl</h3>
+                        <div class="recipe-details">
+                            <span class="recipe-detail">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M8 4V8L10.5 10.5" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                0h 15mins
+                            </span>
+                            <span class="recipe-detail">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 8C9.10457 8 10 7.10457 10 6C10 4.89543 9.10457 4 8 4C6.89543 4 6 4.89543 6 6C6 7.10457 6.89543 8 8 8Z" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M3 14C3 11.7909 5.23858 10 8 10C10.7614 10 13 11.7909 13 14" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                1-2
+                            </span>
+                        </div>
+                        <p class="recipe-description">Fresh salmon with colorful vegetables</p>
+                    </div>
+                </div>
+
+                <div class="recipe-card">
+                    <div class="recipe-image">
+                        <img src="images/white-meed-brocoli.png" alt="Chicken & Broccoli Bowl">
+                    </div>
+                    <div class="recipe-info">
+                        <h3 class="recipe-title">Chicken & Broccoli Bowl</h3>
+                        <div class="recipe-details">
+                            <span class="recipe-detail">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M8 4V8L10.5 10.5" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                0h 35mins
+                            </span>
+                            <span class="recipe-detail">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 8C9.10457 8 10 7.10457 10 6C10 4.89543 9.10457 4 8 4C6.89543 4 6 4.89543 6 6C6 7.10457 6.89543 8 8 8Z" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M3 14C3 11.7909 5.23858 10 8 10C10.7614 10 13 11.7909 13 14" stroke="#718096" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                1
+                            </span>
+                        </div>
+                        <p class="recipe-description">Grilled chicken with roasted vegetables</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 26C23.3137 26 26 23.3137 26 20C26 16.6863 23.3137 14 20 14C16.6863 14 14 16.6863 14 20C14 23.3137 16.6863 26 20 26Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 20C6 20 10 12 20 12C30 12 34 20 34 20C34 20 30 28 20 28C10 28 6 20 6 20Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="step-title">Capture Ingredients</h3>
+                    <p class="step-description">Take a photo of the ingredients you have available in your kitchen</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M28 12L12 28M12 12L28 28" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="step-title">AI Analyzes</h3>
+                    <p class="step-description">Our intelligent system identifies your ingredients and matches them with recipes</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 10L12 18H16V26H24V18H28L20 10Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3 class="step-title">Get Recipes</h3>
+                    <p class="step-description">Receive personalized recipe suggestions based on what you already have</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="cta-title">Ready to Create Delicious Meals?</h2>
+            <p class="cta-description">Stop worrying about what to cook with the ingredients you have. Let IngreGo suggest perfect recipes for you!</p>
+            <button class="btn btn-cta">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 13C11.6569 13 13 11.6569 13 10C13 8.34315 11.6569 7 10 7C8.34315 7 7 8.34315 7 10C7 11.6569 8.34315 13 10 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 10C3 10 5 6 10 6C15 6 17 10 17 10C17 10 15 14 10 14C5 14 3 10 3 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Scan Your Ingredients
+            </button>
+        </div>
+    </section>
+
+    <!-- Upgrade to Pro Section -->
+    <section class="pricing-section">
+        <div class="container">
+            <h2 class="section-title">Upgrade to Pro</h2>
+            <p class="section-subtitle">Get unlimited scans and access to the Meal Planner</p>
+            
+            <div class="subscription-toggle">
+                <button class="toggle-btn active" data-period="monthly">Monthly</button>
+                <button class="toggle-btn" data-period="quarterly">Quarterly (Save 15%)</button>
+            </div>
+
+            <div class="pricing-cards">
+                <div class="pricing-card basic-card">
+                    <h3 class="pricing-card-title">Basic Plan</h3>
+                    <p class="pricing-card-subtitle">Free plan with limited features</p>
+                    <div class="pricing-amount">
+                        <span class="price">$0</span>
+                        <span class="price-period">/forever</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li class="feature-item included">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.6667 5L7.50004 14.1667L3.33337 10" stroke="#48BB78" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            1 scan per 24 hours
+                        </li>
+                        <li class="feature-item included">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.6667 5L7.50004 14.1667L3.33337 10" stroke="#48BB78" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            3 scans per week
+                        </li>
+                        <li class="feature-item included">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.6667 5L7.50004 14.1667L3.33337 10" stroke="#48BB78" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            1 recipe suggestion per scan
+                        </li>
+                        <li class="feature-item excluded">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 5L15 15M15 5L5 15" stroke="#A0AEC0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Meal Planner
+                        </li>
+                    </ul>
+                    <button class="btn btn-current-plan">Current Plan</button>
+                </div>
+
+                <div class="pricing-card pro-card">
+                    <div class="sale-badge">SALE</div>
+                    <h3 class="pricing-card-title pro-title">Pro Plan</h3>
+                    <p class="pricing-card-subtitle">Unlimited access to all features</p>
+                    <div class="pricing-amount pro-amount">
+                        <span class="price">$6.99</span>
+                        <span class="price-period">/month</span>
+                        <span class="price-original">$12.99</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li class="feature-item pro-feature">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.6667 5L7.50004 14.1667L3.33337 10" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <strong>Unlimited ingredient scans</strong>
+                        </li>
+                        <li class="feature-item pro-feature">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.6667 5L7.50004 14.1667L3.33337 10" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <strong>Multiple recipe suggestions per scan</strong>
+                        </li>
+                        <li class="feature-item pro-feature">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.6667 5L7.50004 14.1667L3.33337 10" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <strong>Full access to Meal Planner</strong>
+                        </li>
+                        <li class="feature-item pro-feature">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.6667 5L7.50004 14.1667L3.33337 10" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Priority support
+                        </li>
+                    </ul>
+                    <button class="btn btn-upgrade">Upgrade Now</button>
+                </div>
+            </div>
+
+            <div class="why-upgrade">
+                <h3 class="why-title">Why upgrade to Pro?</h3>
+                <div class="benefits">
+                    <div class="benefit">
+                        <h4 class="benefit-title">Unlimited Scans</h4>
+                        <p class="benefit-description">Scan as many ingredients as you want, whenever you want, without limits.</p>
+                    </div>
+                    <div class="benefit">
+                        <h4 class="benefit-title">More Suggestions</h4>
+                        <p class="benefit-description">Get multiple recipe suggestions for each ingredient scan.</p>
+                    </div>
+                    <div class="benefit">
+                        <h4 class="benefit-title">Meal Planner</h4>
+                        <p class="benefit-description">Access our powerful Meal Planner to organize your weekly meals and create shopping lists.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 IngreGo. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

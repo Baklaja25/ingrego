@@ -1,0 +1,20 @@
+export type MealSlot = "breakfast" | "lunch" | "dinner"
+
+export type MealPlanData = Record<string, Record<MealSlot, string | null>>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

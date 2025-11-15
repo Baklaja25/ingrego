@@ -1,0 +1,26 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFEADB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FBEED7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#grad3)"/>
+  <rect x="100" y="150" width="450" height="500" rx="25" fill="white" stroke="#FF8C42" stroke-width="3" opacity="0.9"/>
+  <rect x="650" y="150" width="450" height="500" rx="25" fill="white" stroke="#ffb46b" stroke-width="3" opacity="0.9"/>
+  <text x="325" y="250" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#FF8C42" text-anchor="middle">Fridge</text>
+  <text x="325" y="300" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#FF8C42" text-anchor="middle">Ingredients</text>
+  <circle cx="325" cy="400" r="60" fill="#FF8C42" opacity="0.3"/>
+  <circle cx="325" cy="500" r="50" fill="#ffb46b" opacity="0.3"/>
+  <circle cx="325" cy="600" r="55" fill="#FF8C42" opacity="0.3"/>
+  <text x="875" y="250" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#ffb46b" text-anchor="middle">AI Dinner</text>
+  <text x="875" y="300" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#ffb46b" text-anchor="middle">Recipes</text>
+  <rect x="750" y="380" width="250" height="180" rx="15" fill="#ffb46b" opacity="0.2"/>
+  <rect x="750" y="580" width="250" height="50" rx="10" fill="#FF8C42" opacity="0.2"/>
+  <path d="M 550 400 L 650 400" stroke="#FF8C42" stroke-width="6" fill="none" stroke-linecap="round">
+    <animate attributeName="stroke-dasharray" values="0,100;100,0" dur="2s" repeatCount="indefinite"/>
+  </path>
+  <text x="600" y="720" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#FF8C42" text-anchor="middle">Fridge Ingredients → AI Dinner Recipes</text>
+</svg>
+
+

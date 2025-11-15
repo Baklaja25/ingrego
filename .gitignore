@@ -1,0 +1,25 @@
+.env
+.env.*
+*.env
+*Copy.env
+
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Production
+*.log
+*.cache
+
+# Database
+*.db
+*.db-journal
+
+# OS
+.DS_Store
+Thumbs.db
