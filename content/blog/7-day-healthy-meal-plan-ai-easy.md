@@ -193,3 +193,5 @@ This flexibility keeps you motivated and prevents frustration. The goal is susta
 Healthy eating becomes simple with AI support. This 7-day plan offers balance, flavor, and structure for every day of the week. You save time, reduce stress, and enjoy meals that support your health goals. With smart tools and simple recipes, eating well feels achievable and enjoyable. Start your journey today and experience the difference AI can make in your daily nutrition.
 
 
+
+

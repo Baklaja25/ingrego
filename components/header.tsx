@@ -14,14 +14,14 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between gap-4">
+        <div className="flex h-20 items-center justify-between gap-4">
           {/* Logo */}
           <Link href="/" className="flex items-center flex-shrink-0">
             <Image
               src="/images/logo.png"
               alt="IngreGo Logo"
-              width={55}
-              height={55}
+              width={90}
+              height={90}
               className="h-auto w-auto"
             />
           </Link>

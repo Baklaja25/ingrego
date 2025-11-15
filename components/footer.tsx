@@ -14,8 +14,8 @@ export function Footer() {
               <Image
                 src="/images/logo.png"
                 alt="IngreGo Logo"
-                width={55}
-                height={55}
+                width={80}
+                height={80}
                 className="h-auto w-auto"
               />
             </Link>
@@ -87,6 +87,11 @@ export function Footer() {
                   Sign Up
                 </Link>
               </li>
+              <li>
+                <a href="mailto:ingregoinfo@gmail.com" className="text-sm text-muted-foreground hover:text-[#FF8C42] transition-colors">
+                  Contact Us
+                </a>
+              </li>
             </ul>
           </div>
         </div>
@@ -96,10 +101,14 @@ export function Footer() {
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} IngreGo. All rights reserved.
           </p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Contact: <a href="mailto:ingregoinfo@gmail.com" className="text-[#FF8C42] hover:underline">ingregoinfo@gmail.com</a>
+          </p>
         </div>
       </div>
     </footer>
   )
 }
+
 
 

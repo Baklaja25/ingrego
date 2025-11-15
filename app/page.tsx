@@ -3,6 +3,7 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 
 export default async function HomePage() {
@@ -236,11 +237,7 @@ export default async function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 text-center">
-        <div className="container mx-auto px-4">
-          <p>&copy; 2024 IngreGo. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

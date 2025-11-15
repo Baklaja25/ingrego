@@ -31,7 +31,7 @@ export default function UpgradePage() {
           </Button>
 
           <p className="text-xs text-muted-foreground">
-            Secure payments powered by Stripe · Questions? <Link href="/help" className="text-[#FF8C42]">Contact support</Link>
+            Secure payments powered by Stripe · Questions? <a href="mailto:ingregoinfo@gmail.com" className="text-[#FF8C42] hover:underline">Contact support</a>
           </p>
         </div>
       </div>
@@ -42,6 +42,8 @@ export default function UpgradePage() {
     </div>
   )
 }
+
+
 
 
 
