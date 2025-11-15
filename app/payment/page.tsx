@@ -308,7 +308,7 @@ export default function PaymentPage() {
                       <li className="flex gap-2">
                         <span className="font-bold text-[#FF8C42]">3.</span>
                         <span>
-                          Click "I have paid" after sending the payment.
+                          Click &quot;I have paid&quot; after sending the payment.
                         </span>
                       </li>
                     </ol>

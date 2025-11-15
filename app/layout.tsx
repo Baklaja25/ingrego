@@ -4,6 +4,7 @@ import "./globals.css"
 import { Toaster } from "sonner"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Providers } from "@/app/providers"
+import { Analytics } from "@vercel/analytics/next"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const playfair = Playfair_Display({
@@ -36,6 +37,7 @@ export default function RootLayout({
             <Toaster position="top-center" />
           </Providers>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )
