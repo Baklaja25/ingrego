@@ -34,11 +34,13 @@ const actions = [
 ] as const
 
 // Calculate positions for action circles in a semi-circle pattern
+// Positioned to stay within screen bounds, especially on mobile
 const getActionPosition = (index: number, total: number) => {
-  const angle = (index * Math.PI) / (total + 1) - Math.PI / 2 // Start from top, spread in semi-circle
-  const radius = 90 // Distance from FAB center
+  // Adjust angle to spread more upward and leftward (away from screen edges)
+  const angle = (index * Math.PI) / (total + 1) - Math.PI / 2 // Start from top
+  const radius = 65 // Reduced radius to keep circles closer and within screen
   const x = Math.cos(angle) * radius
-  const y = Math.sin(angle) * radius - 20 // Offset upward
+  const y = Math.sin(angle) * radius - 35 // More upward offset to keep within screen
   return {
     x,
     y,
@@ -97,7 +99,7 @@ export function QuickActionsFab() {
       </AnimatePresence>
 
       {/* FAB Container */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-8 right-6 z-50">
         {/* Action Circles */}
         <AnimatePresence>
           {isOpen && (
