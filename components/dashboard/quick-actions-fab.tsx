@@ -33,17 +33,27 @@ const actions = [
   },
 ] as const
 
-// Calculate positions for action circles in a compact semi-circle pattern
-// Positioned to stay well within screen bounds, especially on mobile
+// Calculate positions for action circles in a 150-degree arc with equal spacing
 const getActionPosition = (index: number, total: number) => {
-  // Narrower angle range to keep circles more compact and away from screen edges
-  // Start from top-left and spread in a tighter arc
-  const angleRange = Math.PI * 0.6 // 60% of half circle (108 degrees total)
-  const startAngle = -Math.PI / 2 - angleRange / 2 // Start more to the left
-  const angle = startAngle + (index * angleRange) / (total - 1)
-  const radius = 55 // Compact radius to keep circles close to FAB
+  // 150 degrees in radians = 150 * (π/180) = 2.618 radians
+  const angleRangeDegrees = 150
+  const angleRangeRadians = (angleRangeDegrees * Math.PI) / 180
+  
+  // Start from -75 degrees (center of 150-degree arc pointing upward)
+  // Convert to radians: -75 * (π/180) = -1.308 radians
+  const startAngleRadians = -(angleRangeRadians / 2)
+  
+  // Calculate angle for each circle with equal spacing
+  // For 4 circles, we have 3 intervals, so spacing = angleRange / 3
+  const angle = startAngleRadians + (index * angleRangeRadians) / (total - 1)
+  
+  // Radius for the arc
+  const radius = 75
+  
+  // Calculate x and y positions
   const x = Math.cos(angle) * radius
-  const y = Math.sin(angle) * radius - 40 // Strong upward offset to keep within screen
+  const y = Math.sin(angle) * radius
+  
   return {
     x,
     y,
@@ -101,36 +111,46 @@ export function QuickActionsFab() {
         )}
       </AnimatePresence>
 
-      {/* FAB Container */}
-      <div className="fixed bottom-8 right-6 z-50">
+      {/* FAB Container - Centered at bottom */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
         {/* Action Circles */}
         <AnimatePresence>
           {isOpen && (
-            <div className="absolute bottom-0 right-0">
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
               {actions.map((action, index) => {
                 const Icon = action.icon
                 const position = getActionPosition(index, actions.length)
                 return (
                   <motion.button
                     key={action.label}
-                    initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                    initial={{ 
+                      opacity: 0, 
+                      scale: 0, 
+                      x: 0, 
+                      y: 0,
+                    }}
                     animate={{ 
                       opacity: 1, 
                       scale: 1, 
                       x: position.x,
                       y: position.y,
                     }}
-                    exit={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                    exit={{ 
+                      opacity: 0, 
+                      scale: 0, 
+                      x: 0, 
+                      y: 0,
+                    }}
                     transition={{
-                      delay: index * 0.05,
-                      duration: 0.25,
-                      ease: "easeOut",
+                      delay: index * 0.08,
+                      duration: 0.3,
+                      ease: [0.34, 1.56, 0.64, 1], // Custom easing for smooth bounce
                     }}
                     onClick={() => handleActionClick(action.href)}
-                    className="absolute flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
+                    className="absolute flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
                     aria-label={`${action.label}: ${action.description}`}
                   >
-                    <Icon className="h-4 w-4 text-[#FF8C42]" />
+                    <Icon className="h-5 w-5 text-[#FF8C42]" />
                   </motion.button>
                 )
               })}
