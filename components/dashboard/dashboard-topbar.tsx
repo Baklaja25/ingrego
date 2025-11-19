@@ -19,6 +19,7 @@ export function DashboardTopbar({ onSearch }: DashboardTopbarProps) {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -50,14 +51,14 @@ export function DashboardTopbar({ onSearch }: DashboardTopbarProps) {
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center gap-4 px-4">
         {/* Mobile menu */}
-        <Sheet>
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetTrigger asChild className="lg:hidden">
             <Button variant="ghost" size="icon">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
-            <DashboardSidebar className="border-0" />
+            <DashboardSidebar className="border-0" onLinkClick={() => setSidebarOpen(false)} />
           </SheetContent>
         </Sheet>
 

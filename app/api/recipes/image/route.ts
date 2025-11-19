@@ -28,11 +28,11 @@ export async function POST(request: NextRequest) {
     const { prompt } = validatedFields.data
 
     const response = await openai.images.generate({
-      model: "gpt-image-1",
+      model: "dall-e-3",
       prompt,
       size: "1024x1024",
       n: 1,
-      quality: "high",
+      quality: "hd",
     })
 
     const imageUrl = response.data?.[0]?.url

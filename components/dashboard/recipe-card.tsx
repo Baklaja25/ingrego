@@ -26,7 +26,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
       <Card className="hover:shadow-lg transition-shadow h-full">
         <div className="relative w-full h-48 overflow-hidden rounded-t-2xl bg-muted">
           <Image
-            src={recipe.image || "/images/placeholder-recipe.jpg"}
+            src={recipe.image || "/images/ingrego-recipe.png"}
             alt={recipe.title}
             width={400}
             height={400}

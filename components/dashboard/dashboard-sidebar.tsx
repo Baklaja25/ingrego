@@ -17,9 +17,10 @@ const navItems = [
 
 interface DashboardSidebarProps {
   className?: string
+  onLinkClick?: () => void
 }
 
-export function DashboardSidebar({ className }: DashboardSidebarProps) {
+export function DashboardSidebar({ className, onLinkClick }: DashboardSidebarProps) {
   const pathname = usePathname()
 
   return (
@@ -35,7 +36,11 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
 
           return (
-            <Link key={item.href} href={item.href}>
+            <Link 
+              key={item.href} 
+              href={item.href}
+              onClick={onLinkClick}
+            >
               <Button
                 variant={isActive ? "secondary" : "ghost"}
                 className={cn(

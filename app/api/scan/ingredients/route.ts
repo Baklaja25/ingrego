@@ -84,24 +84,36 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: "system",
-          content: "You are a grocery vision assistant. Identify visible, edible ingredients.",
+          content: "You are a precise food ingredient detection assistant. You ONLY identify ingredients that are clearly visible in the image. Do not guess, assume, or add ingredients that are not directly visible.",
         },
         {
           role: "user",
           content: [
             {
               type: "text",
-              text: `Analyze this image and extract all visible food ingredients. Follow these rules:
-1. Return ingredient-level items (e.g., "tomato", not "salad" or "dish").
-2. Merge duplicates (e.g., "tomato" and "tomatoes" should become "tomato").
-3. If unsure about an ingredient, include it but set a lower confidence score.
-4. Return a maximum of 20 items.
-5. Use lowercase for ingredient names.
-6. Confidence should be between 0 and 1, where 1 is certain and lower values indicate uncertainty.
+              text: `Analyze this image and extract ONLY the food ingredients that are CLEARLY VISIBLE. Follow these strict rules:
+
+CRITICAL RULES:
+1. ONLY return ingredients that you can ACTUALLY SEE in the image - do not guess or assume
+2. Do NOT add common ingredients that might be in a dish but are not visible (e.g., don't add "salt" or "pepper" unless you see salt/pepper containers or visible seasoning)
+3. Do NOT add ingredients based on what a dish typically contains - only what is actually visible
+4. If you see cooked food, identify the raw ingredients that are visible (e.g., if you see chunks of meat, return "beef" or "chicken", not "cooked meat")
+5. If an ingredient is partially visible or unclear, set confidence below 0.7
+6. Return ingredient-level items (e.g., "tomato", not "salad" or "dish")
+7. Merge duplicates (e.g., "tomato" and "tomatoes" should become "tomato")
+8. Return a maximum of 20 items
+9. Use lowercase for ingredient names
+10. Confidence should be between 0 and 1, where 1 is certain and lower values indicate uncertainty
+
+EXAMPLES:
+- If you see a pot with meat and vegetables cooking, return: "beef", "potato", "carrot" (only if clearly visible)
+- Do NOT add: "salt", "pepper", "oil" unless you see these items/containers in the image
+- If you see a salad with lettuce, tomatoes, and cucumbers, return: "lettuce", "tomato", "cucumber"
+- Do NOT add ingredients that might be in a typical salad but are not visible
 
 Return the ingredients as a structured JSON object with:
 - name: ingredient name (string, lowercase)
-- confidence: confidence score 0-1 (number)`,
+- confidence: confidence score 0-1 (number, where 0.8+ means clearly visible, 0.5-0.7 means somewhat visible, below 0.5 means uncertain)`,
             },
             {
               type: "image_url",
@@ -144,9 +156,14 @@ Return the ingredients as a structured JSON object with:
       )
     }
 
-    // Extract just the ingredient names (lowercase, deduplicated)
+    // Extract ingredient names with confidence filtering
+    // Only include ingredients with confidence >= 0.6 (clearly visible or better)
     const ingredients = parsedContent.ingredients
-      ?.map((ing: any) => ing.name?.toLowerCase().trim())
+      ?.filter((ing: any) => {
+        const confidence = ing.confidence ?? 0
+        return confidence >= 0.6 // Only include if clearly visible (0.6 = somewhat visible, 0.8+ = clearly visible)
+      })
+      .map((ing: any) => ing.name?.toLowerCase().trim())
       .filter((name: string) => name && name.length > 0)
       .filter((name: string, index: number, arr: string[]) => arr.indexOf(name) === index) // Deduplicate
       .slice(0, 20) || []

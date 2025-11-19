@@ -1,16 +1,15 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { Header } from "@/components/header"
 import { ScanTabs } from "@/components/scan/scan-tabs"
 import { IngredientEditor } from "@/components/scan/ingredient-editor"
 import { GeneratedRecipeGrid } from "@/components/scan/generated-recipe-grid"
 import { Button } from "@/components/ui/button"
 import { useScanStore } from "@/stores/scan-store"
 import { toast } from "sonner"
-import { Loader2, Sparkles } from "lucide-react"
-import { motion } from "framer-motion"
+import { Loader2, Sparkles, Menu } from "lucide-react"
 import { generateRecipes, Recipe, saveGeneratedRecipe } from "@/lib/generateRecipes"
+import Link from "next/link"
 import {
   getScans,
   regenerateFromScan as regenerateFromScanApi,
@@ -28,6 +27,7 @@ export default function ScanPage() {
   const [recentScans, setRecentScans] = useState<ScanItem[]>([])
   const [isRecentScansLoading, setIsRecentScansLoading] = useState(false)
   const [regeneratingScanId, setRegeneratingScanId] = useState<string | null>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const loadRecentScans = useCallback(async () => {
     setIsRecentScansLoading(true)
@@ -147,54 +147,96 @@ export default function ScanPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-accent/30">
-      <Header />
-      <div className="container max-w-6xl py-8 px-4 space-y-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-2"
-        >
-          <h1 className="text-4xl font-bold tracking-tight">
-            Scan Your Ingredients
+    <div className="min-h-screen bg-white">
+      {/* Top App Bar */}
+      <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-100">
+        <div className="max-w-md mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
+            <Link href="/" className="flex items-center">
+              <span className="text-lg font-semibold text-[#0F172A]">
+                Ingre<span className="text-[#FF8C42]">Go</span>
+              </span>
+            </Link>
+
+            {/* Hamburger Menu */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg hover:bg-slate-50 transition-colors"
+              aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
+            >
+              <Menu className="h-5 w-5 text-[#0F172A]" />
+            </button>
+          </div>
+
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <nav className="md:hidden border-t border-slate-100 py-2 space-y-1">
+              <Link 
+                href="/" 
+                className="block px-4 py-2 text-sm text-[#0F172A] hover:bg-slate-50 rounded-lg transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link 
+                href="/scan" 
+                className="block px-4 py-2 text-sm text-[#0F172A] hover:bg-slate-50 rounded-lg transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Scan
+              </Link>
+              <Link 
+                href="/meal-planner" 
+                className="block px-4 py-2 text-sm text-[#0F172A] hover:bg-slate-50 rounded-lg transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Meal Planner
+              </Link>
+              <Link 
+                href="/blog" 
+                className="block px-4 py-2 text-sm text-[#0F172A] hover:bg-slate-50 rounded-lg transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Blog
+              </Link>
+            </nav>
+          )}
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-md mx-auto px-4 pt-6 pb-10">
+        {/* Hero Section */}
+        <section className="space-y-3">
+          <h1 className="text-3xl md:text-4xl font-semibold text-[#0F172A] leading-tight">
+            Scan your<br />
+            ingredients
           </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Take a photo or upload an image of your ingredients to get
-            personalized recipes.
+          <p className="text-base text-slate-500 max-w-[30ch]">
+            Take a photo or upload an image of your ingredients to get personalized recipes.
           </p>
-        </motion.div>
+        </section>
 
-        {/* Scan Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
+        {/* Primary Actions */}
+        <section className="mt-8 space-y-3">
           <ScanTabs />
-        </motion.div>
+        </section>
 
-        {/* Ingredient Editor */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
+        {/* Detected Ingredients Section */}
+        <section className="mt-10">
           <IngredientEditor />
-        </motion.div>
+        </section>
 
         {/* Get Recipes Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex justify-center"
-        >
+        <div className="mt-8">
           <Button
+            type="button"
             onClick={handleGetRecipes}
-            size="lg"
             disabled={ingredients.length === 0 || isLoadingRecipes}
-            className="bg-[#FF8C42] hover:bg-[#ff7b22] text-white px-8 py-6 text-lg rounded-full"
+            className="w-full min-h-[56px] bg-[#FF8C42] hover:bg-[#ff7b22] text-white text-base font-medium rounded-xl shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoadingRecipes ? (
               <>
@@ -208,35 +250,26 @@ export default function ScanPage() {
               </>
             )}
           </Button>
-        </motion.div>
+        </div>
 
         {/* Recipe Results */}
         {(recipes.length > 0 || isLoadingRecipes) && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="space-y-4"
-          >
-            <h2 className="text-2xl font-bold">Generated Recipes</h2>
+          <section className="mt-10 space-y-4">
+            <h2 className="text-xl font-semibold text-[#0F172A]">Generated Recipes</h2>
             <GeneratedRecipeGrid
               recipes={recipes}
               isLoading={isLoadingRecipes}
               onSaveRecipe={handleSaveRecipe}
               savingRecipeIndex={savingRecipeIndex}
             />
-          </motion.div>
+          </section>
         )}
 
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="space-y-3"
-        >
+        {/* Recent Scans */}
+        <section className="mt-10 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold text-primary">Recent scans</h3>
-            <Button variant="link" className="text-primary p-0" asChild>
+            <h3 className="text-lg font-medium text-[#0F172A]">Recent scans</h3>
+            <Button variant="link" className="text-[#FF8C42] p-0 h-auto font-normal" asChild>
               <Link href="/dashboard/scans">View history</Link>
             </Button>
           </div>
@@ -246,8 +279,8 @@ export default function ScanPage() {
             onRegenerate={handleRegenerateFromScan}
             regeneratingId={regeneratingScanId}
           />
-        </motion.section>
-      </div>
+        </section>
+      </main>
     </div>
   )
 }

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   try {
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
-        { imageUrl: "/images/thumb-placeholder.jpg" },
+        { imageUrl: "/images/ingrego-recipe.png" },
         { status: 500 }
       )
     }
@@ -19,16 +19,16 @@ export async function POST(req: NextRequest) {
     const { prompt } = schema.parse(body)
 
     const response = await openai.images.generate({
-      model: "gpt-image-1",
+      model: "dall-e-2",
       prompt:
         prompt +
         " food photography, minimalistic thumbnail view, soft lighting, high contrast",
       size: "256x256",
       n: 1,
-      quality: "medium",
+      response_format: "url",
     })
 
-    const imageUrl = response.data?.[0]?.url || "/images/thumb-placeholder.jpg"
+    const imageUrl = response.data?.[0]?.url || "/images/ingrego-recipe.png"
     return NextResponse.json({ imageUrl })
   } catch (error: any) {
     console.error("Thumbnail generation error:", error)
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     if (error.status === 403) {
       return NextResponse.json(
         {
-          imageUrl: "/images/thumb-placeholder.jpg",
+          imageUrl: "/images/ingrego-recipe.png",
           error:
             "Image generation unavailable until the OpenAI organization is verified.",
         },
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    return NextResponse.json({ imageUrl: "/images/thumb-placeholder.jpg" })
+    return NextResponse.json({ imageUrl: "/images/ingrego-recipe.png" })
   }
 }
 

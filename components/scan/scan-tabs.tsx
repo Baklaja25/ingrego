@@ -1,10 +1,8 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Camera, Upload, X, Loader2 } from "lucide-react"
+import { Camera, Upload, X, Loader2, AlertCircle } from "lucide-react"
 import { useScanStore } from "@/stores/scan-store"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
@@ -24,6 +22,7 @@ export function ScanTabs() {
   const [isDetecting, setIsDetecting] = useState(false)
   const [cameraError, setCameraError] = useState<string | null>(null)
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
+  const [isRequestingPermission, setIsRequestingPermission] = useState(false)
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -31,15 +30,34 @@ export function ScanTabs() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const checkCameraPermission = useCallback(async () => {
+    setIsRequestingPermission(true)
     try {
+      // Stop any existing stream first
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop())
+        streamRef.current = null
+      }
+
+      // Clear any existing srcObject
+      if (videoRef.current) {
+        videoRef.current.srcObject = null
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
       })
+      
       if (videoRef.current) {
-        videoRef.current.srcObject = stream
+        const video = videoRef.current
+        video.srcObject = stream
         streamRef.current = stream
         setHasPermission(true)
         setCameraError(null)
+
+        // Try to play immediately
+        video.play().catch((err) => {
+          console.error("Error playing video:", err)
+        })
       }
     } catch (error: any) {
       setHasPermission(false)
@@ -50,23 +68,88 @@ export function ScanTabs() {
       } else {
         setCameraError("Failed to access camera. Please try again.")
       }
+    } finally {
+      setIsRequestingPermission(false)
     }
   }, [])
 
-  // Camera setup
+  // Camera setup - initialize when tab is active
   useEffect(() => {
     if (activeTab === "camera" && hasPermission === null && !capturedImage) {
-      checkCameraPermission()
+      // Small delay to ensure video element is mounted in DOM
+      const timer = setTimeout(() => {
+        if (videoRef.current) {
+          checkCameraPermission()
+        }
+      }, 200)
+      return () => clearTimeout(timer)
+    }
+
+    // Cleanup stream when tab changes away from camera
+    if (activeTab !== "camera" && streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop())
+      streamRef.current = null
+      if (videoRef.current) {
+        videoRef.current.srcObject = null
+      }
+      setHasPermission(null)
     }
 
     return () => {
-      // Cleanup stream when component unmounts or tab changes
+      // Cleanup stream when component unmounts
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop())
         streamRef.current = null
       }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null
+      }
     }
   }, [activeTab, hasPermission, capturedImage, checkCameraPermission])
+
+  // Additional effect to handle video element ready state
+  useEffect(() => {
+    if (activeTab === "camera" && videoRef.current && hasPermission) {
+      const video = videoRef.current
+      
+      const handleCanPlay = () => {
+        // Video is ready to play - ensure it's playing
+        if (video.paused && video.readyState >= 2) {
+          video.play().catch((err) => {
+            console.error("Error playing video:", err)
+          })
+        }
+      }
+
+      // Only add listener if video has srcObject
+      if (video.srcObject) {
+        video.addEventListener("canplay", handleCanPlay)
+        
+        // Try to play immediately if already ready
+        if (video.readyState >= 2) {
+          video.play().catch((err) => {
+            console.error("Error playing video immediately:", err)
+          })
+        }
+      }
+
+      return () => {
+        video.removeEventListener("canplay", handleCanPlay)
+      }
+    }
+  }, [activeTab, hasPermission])
+
+  const handleCameraClick = () => {
+    setActiveTab("camera")
+    if (hasPermission === null && !capturedImage) {
+      checkCameraPermission()
+    }
+  }
+
+  const handleUploadClick = () => {
+    setActiveTab("upload")
+    fileInputRef.current?.click()
+  }
 
   const capturePhoto = () => {
     if (!videoRef.current || !canvasRef.current) return
@@ -164,12 +247,27 @@ export function ScanTabs() {
     }
   }
 
-  const resetCamera = () => {
+  const resetCamera = async () => {
     setCapturedImage(null)
     setImageUrl(null)
     setIngredients([])
     setCameraError(null)
+    
+    // Stop existing stream
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop())
+      streamRef.current = null
+    }
+    
+    if (videoRef.current) {
+      videoRef.current.srcObject = null
+    }
+    
+    // Reset permission state and reinitialize camera
     setHasPermission(null)
+    
+    // Small delay to ensure cleanup is complete
+    await new Promise(resolve => setTimeout(resolve, 100))
     checkCameraPermission()
   }
 
@@ -193,166 +291,165 @@ export function ScanTabs() {
   }
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="camera">
-          <Camera className="mr-2 h-4 w-4" />
-          Camera
-        </TabsTrigger>
-        <TabsTrigger value="upload">
-          <Upload className="mr-2 h-4 w-4" />
-          Upload
-        </TabsTrigger>
-      </TabsList>
+    <div className="space-y-3">
+      {/* Primary Action Buttons */}
+      <div className="space-y-3">
+        {/* Scan with Camera Button */}
+        <Button
+          type="button"
+          onClick={handleCameraClick}
+          className="w-full min-h-[56px] bg-[#FF8C42] hover:bg-[#ff7b22] text-white text-base font-medium rounded-xl shadow-sm flex items-center justify-center gap-2"
+        >
+          <Camera className="h-5 w-5" />
+          Scan with camera
+        </Button>
 
-      <TabsContent value="camera" className="space-y-4">
-        <Card>
-          <CardContent className="p-6">
-            {cameraError ? (
-              <div className="text-center py-12 space-y-4">
-                <p className="text-sm text-destructive">{cameraError}</p>
-                <Button onClick={checkCameraPermission} variant="outline">
+        {/* Upload Photo Button */}
+        <Button
+          type="button"
+          onClick={handleUploadClick}
+          variant="outline"
+          className="w-full min-h-[56px] bg-white border border-slate-200 text-[#0F172A] text-base font-medium rounded-xl shadow-sm hover:bg-slate-50 flex items-center justify-center gap-2"
+        >
+          <Upload className="h-5 w-5" />
+          Upload photo
+        </Button>
+      </div>
+
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/jpg,image/png,image/heic"
+        onChange={handleFileUpload}
+        className="hidden"
+      />
+
+      {/* Camera Permission / Error States */}
+      {activeTab === "camera" && (
+        <div className="space-y-3">
+          {/* Requesting Permission State */}
+          {isRequestingPermission && (
+            <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 rounded-xl px-4 py-3 border border-slate-100">
+              <Loader2 className="h-4 w-4 animate-spin text-[#FF8C42]" />
+              <span>Opening camera…</span>
+            </div>
+          )}
+
+          {/* Camera Error State */}
+          {cameraError && !isRequestingPermission && (
+            <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 flex items-start gap-3">
+              <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-red-800">
+                  {cameraError}
+                </p>
+                <Button
+                  type="button"
+                  onClick={checkCameraPermission}
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 border-red-200 text-red-700 hover:bg-red-100"
+                >
                   Retry
                 </Button>
               </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-muted">
-                  <AnimatePresence mode="wait">
-                    {capturedImage ? (
-                      <motion.div
-                        key="preview"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="relative w-full h-full"
-                      >
-                        <Image
-                          src={capturedImage}
-                          alt="Captured"
-                          fill
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                          className="object-cover"
-                          unoptimized
-                        />
-                        <button
-                          onClick={resetCamera}
-                          className="absolute top-2 right-2 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors"
-                          aria-label="Retake photo"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </motion.div>
-                    ) : (
-                      <motion.video
-                        key="video"
-                        ref={videoRef}
-                        autoPlay
-                        playsInline
-                        className="w-full h-full object-cover"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                      />
-                    )}
-                  </AnimatePresence>
-                  <canvas ref={canvasRef} className="hidden" />
-                </div>
-                {!capturedImage && (
-                  <Button
-                    onClick={capturePhoto}
-                    size="lg"
-                    className="w-full bg-primary hover:bg-primary/90"
-                    disabled={!hasPermission || isDetecting}
-                  >
-                    {isDetecting ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Detecting...
-                      </>
-                    ) : (
-                      <>
-                        <Camera className="mr-2 h-5 w-5" />
-                        Capture Photo
-                      </>
-                    )}
-                  </Button>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      <TabsContent value="upload" className="space-y-4">
-        <Card>
-          <CardContent className="p-6">
-            <div
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              className="border-2 border-dashed rounded-2xl p-12 text-center hover:border-primary/50 transition-colors cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/jpg,image/png,image/heic"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-              <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-sm font-medium mb-2">
-                Drag and drop an image here, or click to browse
-              </p>
-              <p className="text-xs text-muted-foreground mb-4">
-                JPG, PNG, or HEIC (max 10MB)
-              </p>
-              <Button variant="outline" type="button">
-                Browse Files
-              </Button>
             </div>
-            {imageUrl && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 relative rounded-2xl overflow-hidden"
-              >
-                <Image
-                  src={imageUrl}
-                  alt="Uploaded"
-                  width={1200}
-                  height={900}
-                  className="h-auto max-h-96 w-full object-contain"
-                  unoptimized
-                  sizes="(max-width: 768px) 100vw, 66vw"
-                />
-                <button
-                  onClick={() => {
-                    setImageUrl(null)
-                    setCapturedImage(null)
-                    setIngredients([])
-                    if (fileInputRef.current) {
-                      fileInputRef.current.value = ""
-                    }
-                  }}
-                  className="absolute top-2 right-2 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors"
-                  aria-label="Remove image"
+          )}
+
+          {/* Camera Preview / Video Feed */}
+          {hasPermission && !cameraError && !capturedImage && (
+            <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
+              <motion.video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="w-full h-full object-cover"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              />
+              <canvas ref={canvasRef} className="hidden" />
+              
+              {/* Capture Button Overlay */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+                <Button
+                  type="button"
+                  onClick={capturePhoto}
+                  disabled={isDetecting}
+                  className="h-14 w-14 rounded-full bg-white border-4 border-[#FF8C42] shadow-lg hover:bg-slate-50 disabled:opacity-50"
+                  aria-label="Capture photo"
                 >
-                  <X className="h-4 w-4" />
-                </button>
-              </motion.div>
-            )}
-            {isDetecting && (
-              <div className="mt-4 text-center">
-                <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" />
-                <p className="text-sm text-muted-foreground mt-2">
-                  Detecting ingredients...
-                </p>
+                  {isDetecting ? (
+                    <Loader2 className="h-6 w-6 animate-spin text-[#FF8C42]" />
+                  ) : (
+                    <div className="h-8 w-8 rounded-full bg-[#FF8C42]" />
+                  )}
+                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
+            </div>
+          )}
+
+          {/* Captured Image Preview */}
+          {capturedImage && (
+            <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
+              <Image
+                src={capturedImage}
+                alt="Captured"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+                unoptimized
+              />
+              <button
+                type="button"
+                onClick={resetCamera}
+                className="absolute top-3 right-3 h-9 w-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-md"
+                aria-label="Retake photo"
+              >
+                <X className="h-4 w-4 text-[#0F172A]" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Upload Preview */}
+      {activeTab === "upload" && imageUrl && (
+        <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
+          <Image
+            src={imageUrl}
+            alt="Uploaded"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-contain"
+            unoptimized
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setImageUrl(null)
+              setCapturedImage(null)
+              setIngredients([])
+              if (fileInputRef.current) {
+                fileInputRef.current.value = ""
+              }
+            }}
+            className="absolute top-3 right-3 h-9 w-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-md"
+            aria-label="Remove image"
+          >
+            <X className="h-4 w-4 text-[#0F172A]" />
+          </button>
+        </div>
+      )}
+
+      {/* Detection Loading State */}
+      {isDetecting && (
+        <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 rounded-xl px-4 py-3 border border-slate-100">
+          <Loader2 className="h-4 w-4 animate-spin text-[#FF8C42]" />
+          <span>Detecting ingredients…</span>
+        </div>
+      )}
+    </div>
   )
 }
-
