@@ -38,20 +38,17 @@ const actions = [
   },
 ] as const
 
-// Calculate positions for action circles in a full circle (360°)
-const getActionPosition = (angleDegrees: number, radius: number = 90) => {
+// Calculate positions for action circles
+const getActionPosition = (angleDegrees: number, radius: number = 100) => {
   // Convert degrees to radians
   // Subtract 90 to start from top (0° = top, 90° = right, 180° = bottom, 270° = left)
   const angleRadians = ((angleDegrees - 90) * Math.PI) / 180
   
-  // Calculate x and y positions
+  // Calculate x and y positions relative to center
   const x = Math.cos(angleRadians) * radius
   const y = Math.sin(angleRadians) * radius
   
-  return {
-    x,
-    y,
-  }
+  return { x, y }
 }
 
 export function QuickActionsFab() {
@@ -107,49 +104,52 @@ export function QuickActionsFab() {
 
       {/* FAB Container - Centered at bottom */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-        {/* Action Circles */}
+        {/* Action Circles - Positioned relative to FAB center */}
         <AnimatePresence>
-          {isOpen && (
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
-              {actions.map((action, index) => {
-                const Icon = action.icon
-                const position = getActionPosition(action.angle)
-                return (
-                  <motion.button
-                    key={action.label}
-                    initial={{ 
-                      opacity: 0, 
-                      scale: 0, 
-                      x: 0, 
-                      y: 0,
-                    }}
-                    animate={{ 
-                      opacity: 1, 
-                      scale: 1, 
-                      x: position.x,
-                      y: position.y,
-                    }}
-                    exit={{ 
-                      opacity: 0, 
-                      scale: 0, 
-                      x: 0, 
-                      y: 0,
-                    }}
-                    transition={{
-                      delay: index * 0.08,
-                      duration: 0.3,
-                      ease: [0.34, 1.56, 0.64, 1], // Custom easing for smooth bounce
-                    }}
-                    onClick={() => handleActionClick(action.href)}
-                    className="absolute flex h-12 w-12 items-center justify-center rounded-full bg-white border border-[#FF8C42]/20 shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
-                    aria-label={`${action.label}: ${action.description}`}
-                  >
-                    <Icon className="h-5 w-5 text-[#FF8C42]" />
-                  </motion.button>
-                )
-              })}
-            </div>
-          )}
+          {isOpen &&
+            actions.map((action, index) => {
+              const Icon = action.icon
+              const position = getActionPosition(action.angle)
+              return (
+                <motion.button
+                  key={action.label}
+                  initial={{
+                    opacity: 0,
+                    scale: 0,
+                    x: 0,
+                    y: 0,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    x: position.x,
+                    y: position.y,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    scale: 0,
+                    x: 0,
+                    y: 0,
+                  }}
+                  transition={{
+                    delay: index * 0.08,
+                    duration: 0.3,
+                    ease: [0.34, 1.56, 0.64, 1],
+                  }}
+                  onClick={() => handleActionClick(action.href)}
+                  className="absolute flex h-12 w-12 items-center justify-center rounded-full bg-white border border-[#FF8C42]/20 shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
+                  style={{
+                    // Position at FAB center (FAB is 56px, so center is at 28px from left/top of FAB)
+                    left: "28px",
+                    top: "28px",
+                    // Framer Motion x/y will add offset from center
+                  }}
+                  aria-label={`${action.label}: ${action.description}`}
+                >
+                  <Icon className="h-5 w-5 text-[#FF8C42]" />
+                </motion.button>
+              )
+            })}
         </AnimatePresence>
 
         {/* FAB Button */}
@@ -157,7 +157,7 @@ export function QuickActionsFab() {
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            "flex h-14 w-14 items-center justify-center rounded-full bg-[#FF8C42] text-white shadow-lg shadow-orange-300/40 transition-shadow hover:shadow-xl hover:shadow-orange-300/50 focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2",
+            "relative flex h-14 w-14 items-center justify-center rounded-full bg-[#FF8C42] text-white shadow-lg shadow-orange-300/40 transition-shadow hover:shadow-xl hover:shadow-orange-300/50 focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2",
             isOpen && "ring-2 ring-[#FF8C42] ring-offset-2"
           )}
           aria-label={isOpen ? "Close quick actions" : "Open quick actions"}
