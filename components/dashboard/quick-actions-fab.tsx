@@ -8,6 +8,12 @@ import { cn } from "@/lib/utils"
 
 const actions = [
   {
+    label: "Cook Mode",
+    description: "Start cook mode",
+    href: "/recipes/recipe-1",
+    icon: ChefHat,
+  },
+  {
     label: "Scan",
     description: "Scan ingredients",
     href: "/scan",
@@ -20,12 +26,6 @@ const actions = [
     icon: Sparkles,
   },
   {
-    label: "Cook Mode",
-    description: "Start cook mode",
-    href: "/recipes/recipe-1",
-    icon: ChefHat,
-  },
-  {
     label: "Planner",
     description: "Meal planner",
     href: "/meal-planner",
@@ -33,10 +33,10 @@ const actions = [
   },
 ] as const
 
-// Calculate positions for action cards in a semi-circle pattern
+// Calculate positions for action circles in a semi-circle pattern
 const getActionPosition = (index: number, total: number) => {
   const angle = (index * Math.PI) / (total + 1) - Math.PI / 2 // Start from top, spread in semi-circle
-  const radius = 80 // Distance from FAB center
+  const radius = 90 // Distance from FAB center
   const x = Math.cos(angle) * radius
   const y = Math.sin(angle) * radius - 20 // Offset upward
   return {
@@ -98,7 +98,7 @@ export function QuickActionsFab() {
 
       {/* FAB Container */}
       <div className="fixed bottom-6 right-6 z-50">
-        {/* Action Cards */}
+        {/* Action Circles */}
         <AnimatePresence>
           {isOpen && (
             <div className="absolute bottom-0 right-0">
@@ -108,27 +108,24 @@ export function QuickActionsFab() {
                 return (
                   <motion.button
                     key={action.label}
-                    initial={{ opacity: 0, scale: 0.9, x: 0, y: 0 }}
+                    initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
                     animate={{ 
                       opacity: 1, 
                       scale: 1, 
                       x: position.x,
                       y: position.y,
                     }}
-                    exit={{ opacity: 0, scale: 0.9, x: 0, y: 0 }}
+                    exit={{ opacity: 0, scale: 0, x: 0, y: 0 }}
                     transition={{
                       delay: index * 0.05,
-                      duration: 0.2,
+                      duration: 0.25,
                       ease: "easeOut",
                     }}
                     onClick={() => handleActionClick(action.href)}
-                    className="absolute flex items-center gap-2 rounded-2xl bg-white px-3 py-2 shadow-md transition-shadow hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
+                    className="absolute flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
                     aria-label={`${action.label}: ${action.description}`}
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FF8C42]/10">
-                      <Icon className="h-4 w-4 text-[#FF8C42]" />
-                    </div>
-                    <span className="text-sm font-medium text-[#1E1E1E]">{action.label}</span>
+                    <Icon className="h-5 w-5 text-[#FF8C42]" />
                   </motion.button>
                 )
               })}
