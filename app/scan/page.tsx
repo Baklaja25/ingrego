@@ -17,7 +17,6 @@ import {
   type ScanItem,
 } from "@/lib/scans"
 import { MiniScanList } from "@/components/MiniScanList"
-import Link from "next/link"
 
 export default function ScanPage() {
   const { ingredients, imageUrl, capturedImage } = useScanStore()
