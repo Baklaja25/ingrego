@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatCard } from "./stat-card"
 import { MiniScanList } from "./mini-scan-list"
-import { QuickActions } from "./quick-actions"
+import { QuickActionsFab } from "./quick-actions-fab"
 import { ChefHat, ArrowRight, Clock, Users, ScanLine, Bookmark, CalendarDays, Flame } from "lucide-react"
 import { useMemo } from "react"
 import type { DashboardOverviewData } from "./dashboard-overview"
@@ -170,9 +170,10 @@ export function DashboardOverviewClient({ data }: DashboardOverviewClientProps) 
             <MiniScanList scans={data.scans.recent} />
           </CardContent>
         </Card>
-
-        <QuickActions className="h-full" />
       </motion.section>
+
+      {/* Quick Actions FAB - rendered at page level */}
+      <QuickActionsFab />
 
       <motion.section
         variants={sectionVariants}
