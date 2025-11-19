@@ -6,53 +6,47 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Camera, ChefHat, Sparkles, CalendarDays, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+// Actions arranged in full circle: Top, Top-Right, Bottom-Right, Bottom-Left
 const actions = [
-  {
-    label: "Cook Mode",
-    description: "Start cook mode",
-    href: "/recipes/recipe-1",
-    icon: ChefHat,
-  },
   {
     label: "Scan",
     description: "Scan ingredients",
     href: "/scan",
     icon: Camera,
+    angle: 0, // Top (0°)
   },
   {
     label: "Recipes",
     description: "Suggest recipes",
     href: "/",
     icon: Sparkles,
+    angle: 45, // Top-Right (45°)
   },
   {
     label: "Planner",
     description: "Meal planner",
     href: "/meal-planner",
     icon: CalendarDays,
+    angle: 135, // Bottom-Right (135°)
+  },
+  {
+    label: "Cook Mode",
+    description: "Start cook mode",
+    href: "/recipes/recipe-1",
+    icon: ChefHat,
+    angle: 225, // Bottom-Left (225°)
   },
 ] as const
 
-// Calculate positions for action circles in a 150-degree arc with equal spacing
-const getActionPosition = (index: number, total: number) => {
-  // 150 degrees in radians = 150 * (π/180) = 2.618 radians
-  const angleRangeDegrees = 150
-  const angleRangeRadians = (angleRangeDegrees * Math.PI) / 180
-  
-  // Start from -75 degrees (center of 150-degree arc pointing upward)
-  // Convert to radians: -75 * (π/180) = -1.308 radians
-  const startAngleRadians = -(angleRangeRadians / 2)
-  
-  // Calculate angle for each circle with equal spacing
-  // For 4 circles, we have 3 intervals, so spacing = angleRange / 3
-  const angle = startAngleRadians + (index * angleRangeRadians) / (total - 1)
-  
-  // Radius for the arc
-  const radius = 75
+// Calculate positions for action circles in a full circle (360°)
+const getActionPosition = (angleDegrees: number, radius: number = 90) => {
+  // Convert degrees to radians
+  // Subtract 90 to start from top (0° = top, 90° = right, 180° = bottom, 270° = left)
+  const angleRadians = ((angleDegrees - 90) * Math.PI) / 180
   
   // Calculate x and y positions
-  const x = Math.cos(angle) * radius
-  const y = Math.sin(angle) * radius
+  const x = Math.cos(angleRadians) * radius
+  const y = Math.sin(angleRadians) * radius
   
   return {
     x,
@@ -119,7 +113,7 @@ export function QuickActionsFab() {
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
               {actions.map((action, index) => {
                 const Icon = action.icon
-                const position = getActionPosition(index, actions.length)
+                const position = getActionPosition(action.angle)
                 return (
                   <motion.button
                     key={action.label}
@@ -147,7 +141,7 @@ export function QuickActionsFab() {
                       ease: [0.34, 1.56, 0.64, 1], // Custom easing for smooth bounce
                     }}
                     onClick={() => handleActionClick(action.href)}
-                    className="absolute flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
+                    className="absolute flex h-12 w-12 items-center justify-center rounded-full bg-white border border-[#FF8C42]/20 shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
                     aria-label={`${action.label}: ${action.description}`}
                   >
                     <Icon className="h-5 w-5 text-[#FF8C42]" />
