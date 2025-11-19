@@ -12,58 +12,42 @@ const actions = [
     description: "Scan ingredients",
     href: "/scan",
     icon: Camera,
-    position: { top: "-140px", left: "0px" },
   },
   {
     label: "Recipes",
     description: "Suggest recipes",
     href: "/",
     icon: Sparkles,
-    position: { top: "-100px", left: "-90px" },
   },
   {
     label: "Cook Mode",
     description: "Start cook mode",
     href: "/recipes/recipe-1",
     icon: ChefHat,
-    position: { top: "-100px", right: "-90px" },
   },
   {
     label: "Planner",
     description: "Meal planner",
     href: "/meal-planner",
     icon: CalendarDays,
-    position: { top: "-140px", right: "0px" },
   },
 ] as const
+
+// Calculate positions for action cards in a semi-circle pattern
+const getActionPosition = (index: number, total: number) => {
+  const angle = (index * Math.PI) / (total + 1) - Math.PI / 2 // Start from top, spread in semi-circle
+  const radius = 80 // Distance from FAB center
+  const x = Math.cos(angle) * radius
+  const y = Math.sin(angle) * radius - 20 // Offset upward
+  return {
+    x,
+    y,
+  }
+}
 
 export function QuickActionsFab() {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
-
-  // Close on ESC key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        setIsOpen(false)
-      }
-    }
-
-    document.addEventListener("keydown", handleEscape)
-    return () => document.removeEventListener("keydown", handleEscape)
-  }, [isOpen])
-
-  // Prevent body scroll when menu is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = ""
-    }
-    return () => {
-      document.body.style.overflow = ""
-    }
-  }, [isOpen])
 
   const handleActionClick = useCallback(
     (href: string) => {
@@ -73,9 +57,27 @@ export function QuickActionsFab() {
     [router]
   )
 
-  const toggleMenu = useCallback(() => {
-    setIsOpen((prev) => !prev)
-  }, [])
+  // Handle ESC key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape)
+      // Prevent body scroll when menu is open
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape)
+      document.body.style.overflow = ""
+    }
+  }, [isOpen])
 
   return (
     <>
@@ -99,27 +101,29 @@ export function QuickActionsFab() {
         {/* Action Cards */}
         <AnimatePresence>
           {isOpen && (
-            <div className="absolute bottom-16 right-0">
+            <div className="absolute bottom-0 right-0">
               {actions.map((action, index) => {
                 const Icon = action.icon
+                const position = getActionPosition(index, actions.length)
                 return (
                   <motion.button
                     key={action.label}
-                    initial={{ opacity: 0, scale: 0.9, y: 8 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 8 }}
+                    initial={{ opacity: 0, scale: 0.9, x: 0, y: 0 }}
+                    animate={{ 
+                      opacity: 1, 
+                      scale: 1, 
+                      x: position.x,
+                      y: position.y,
+                    }}
+                    exit={{ opacity: 0, scale: 0.9, x: 0, y: 0 }}
                     transition={{
                       delay: index * 0.05,
                       duration: 0.2,
                       ease: "easeOut",
                     }}
                     onClick={() => handleActionClick(action.href)}
-                    className={cn(
-                      "absolute flex items-center gap-2 rounded-2xl bg-white px-3 py-2 shadow-md transition-all hover:scale-105 hover:shadow-lg",
-                      "focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
-                    )}
-                    style={action.position}
-                    aria-label={action.description}
+                    className="absolute flex items-center gap-2 rounded-2xl bg-white px-3 py-2 shadow-md transition-shadow hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
+                    aria-label={`${action.label}: ${action.description}`}
                   >
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FF8C42]/10">
                       <Icon className="h-4 w-4 text-[#FF8C42]" />
@@ -135,14 +139,13 @@ export function QuickActionsFab() {
         {/* FAB Button */}
         <motion.button
           type="button"
-          onClick={toggleMenu}
+          onClick={() => setIsOpen(!isOpen)}
+          className={cn(
+            "flex h-14 w-14 items-center justify-center rounded-full bg-[#FF8C42] text-white shadow-lg shadow-orange-300/40 transition-shadow hover:shadow-xl hover:shadow-orange-300/50 focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2",
+            isOpen && "ring-2 ring-[#FF8C42] ring-offset-2"
+          )}
           aria-label={isOpen ? "Close quick actions" : "Open quick actions"}
           aria-expanded={isOpen}
-          className={cn(
-            "flex h-14 w-14 items-center justify-center rounded-full bg-[#FF8C42] text-white shadow-lg shadow-orange-300/40",
-            "transition-all hover:scale-110 hover:shadow-xl hover:shadow-orange-300/50",
-            "focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2 focus:ring-offset-white"
-          )}
           whileTap={{ scale: 0.95 }}
         >
           <motion.div
@@ -150,11 +153,9 @@ export function QuickActionsFab() {
             transition={{ duration: 0.2, ease: "easeInOut" }}
           >
             {isOpen ? (
-              <X className="h-6 w-6" aria-hidden="true" />
+              <X className="h-6 w-6" strokeWidth={2.5} />
             ) : (
-              <span className="text-2xl font-light leading-none" aria-hidden="true">
-                +
-              </span>
+              <span className="text-2xl font-light leading-none">+</span>
             )}
           </motion.div>
         </motion.button>

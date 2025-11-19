@@ -65,6 +65,7 @@ export function DashboardOverviewClient({ data }: DashboardOverviewClientProps) 
 
   return (
     <div className="space-y-10">
+      <QuickActionsFab />
       <motion.section
         variants={sectionVariants}
         initial="hidden"
@@ -147,7 +148,6 @@ export function DashboardOverviewClient({ data }: DashboardOverviewClientProps) 
         initial="hidden"
         animate="visible"
         custom={2}
-        className="grid gap-6 lg:grid-cols-[2fr,1fr]"
       >
         <Card className="rounded-3xl border border-[#FF8C42]/10 bg-white shadow-sm">
           <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -171,9 +171,6 @@ export function DashboardOverviewClient({ data }: DashboardOverviewClientProps) 
           </CardContent>
         </Card>
       </motion.section>
-
-      {/* Quick Actions FAB - rendered at page level */}
-      <QuickActionsFab />
 
       <motion.section
         variants={sectionVariants}
