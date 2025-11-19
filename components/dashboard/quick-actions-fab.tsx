@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { createPortal } from "react-dom"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Camera, ChefHat, Sparkles, CalendarDays, X } from "lucide-react"
@@ -38,22 +39,39 @@ const actions = [
   },
 ] as const
 
-// Calculate positions for action circles
-const getActionPosition = (angleDegrees: number, radius: number = 100) => {
-  // Convert degrees to radians
-  // Subtract 90 to start from top (0° = top, 90° = right, 180° = bottom, 270° = left)
+// FAB position constants
+const FAB_BOTTOM = 32 // bottom-8 = 32px
+const FAB_SIZE = 56 // h-14 w-14 = 56px
+const ACTION_RADIUS = 100 // Distance from FAB center
+const ACTION_SIZE = 48 // h-12 w-12 = 48px
+
+// Calculate viewport positions for action buttons
+const getActionViewportPosition = (angleDegrees: number) => {
   const angleRadians = ((angleDegrees - 90) * Math.PI) / 180
   
-  // Calculate x and y positions relative to center
-  const x = Math.cos(angleRadians) * radius
-  const y = Math.sin(angleRadians) * radius
+  // FAB center position in viewport
+  const fabCenterX = typeof window !== "undefined" ? window.innerWidth / 2 : 0
+  const fabCenterY = typeof window !== "undefined" ? window.innerHeight - FAB_BOTTOM - (FAB_SIZE / 2) : 0
+  
+  // Calculate offset from FAB center
+  const offsetX = Math.cos(angleRadians) * ACTION_RADIUS
+  const offsetY = Math.sin(angleRadians) * ACTION_RADIUS
+  
+  // Final position (center of action button)
+  const x = fabCenterX + offsetX - (ACTION_SIZE / 2)
+  const y = fabCenterY + offsetY - (ACTION_SIZE / 2)
   
   return { x, y }
 }
 
 export function QuickActionsFab() {
   const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleActionClick = useCallback(
     (href: string) => {
@@ -73,7 +91,6 @@ export function QuickActionsFab() {
 
     if (isOpen) {
       document.addEventListener("keydown", handleEscape)
-      // Prevent body scroll when menu is open
       document.body.style.overflow = "hidden"
     } else {
       document.body.style.overflow = ""
@@ -84,6 +101,60 @@ export function QuickActionsFab() {
       document.body.style.overflow = ""
     }
   }, [isOpen])
+
+  // Handle window resize - close menu to avoid positioning issues
+  useEffect(() => {
+    if (!isOpen || !mounted) return
+
+    const handleResize = () => {
+      setIsOpen(false)
+    }
+
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [isOpen, mounted])
+
+  if (!mounted) return null
+
+  const actionButtons = isOpen && (
+    <AnimatePresence>
+      {actions.map((action, index) => {
+        const Icon = action.icon
+        const position = getActionViewportPosition(action.angle)
+        return (
+          <motion.button
+            key={action.label}
+            initial={{
+              opacity: 0,
+              scale: 0,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+            }}
+            exit={{
+              opacity: 0,
+              scale: 0,
+            }}
+            transition={{
+              delay: index * 0.08,
+              duration: 0.3,
+              ease: [0.34, 1.56, 0.64, 1],
+            }}
+            onClick={() => handleActionClick(action.href)}
+            className="fixed flex h-12 w-12 items-center justify-center rounded-full bg-white border border-[#FF8C42]/20 shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2 z-50"
+            style={{
+              left: `${position.x}px`,
+              top: `${position.y}px`,
+            }}
+            aria-label={`${action.label}: ${action.description}`}
+          >
+            <Icon className="h-5 w-5 text-[#FF8C42]" />
+          </motion.button>
+        )
+      })}
+    </AnimatePresence>
+  )
 
   return (
     <>
@@ -102,80 +173,32 @@ export function QuickActionsFab() {
         )}
       </AnimatePresence>
 
-      {/* FAB Container - Centered at bottom */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-        {/* Action Circles - Positioned relative to FAB center */}
-        <AnimatePresence>
-          {isOpen &&
-            actions.map((action, index) => {
-              const Icon = action.icon
-              const position = getActionPosition(action.angle)
-              return (
-                <motion.button
-                  key={action.label}
-                  initial={{
-                    opacity: 0,
-                    scale: 0,
-                    x: 0,
-                    y: 0,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    x: position.x,
-                    y: position.y,
-                  }}
-                  exit={{
-                    opacity: 0,
-                    scale: 0,
-                    x: 0,
-                    y: 0,
-                  }}
-                  transition={{
-                    delay: index * 0.08,
-                    duration: 0.3,
-                    ease: [0.34, 1.56, 0.64, 1],
-                  }}
-                  onClick={() => handleActionClick(action.href)}
-                  className="absolute flex h-12 w-12 items-center justify-center rounded-full bg-white border border-[#FF8C42]/20 shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
-                  style={{
-                    // Position at FAB center (FAB is 56px, so center is at 28px from left/top of FAB)
-                    left: "28px",
-                    top: "28px",
-                    // Framer Motion x/y will add offset from center
-                  }}
-                  aria-label={`${action.label}: ${action.description}`}
-                >
-                  <Icon className="h-5 w-5 text-[#FF8C42]" />
-                </motion.button>
-              )
-            })}
-        </AnimatePresence>
+      {/* Action Buttons via Portal */}
+      {mounted && createPortal(actionButtons, document.body)}
 
-        {/* FAB Button */}
-        <motion.button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className={cn(
-            "relative flex h-14 w-14 items-center justify-center rounded-full bg-[#FF8C42] text-white shadow-lg shadow-orange-300/40 transition-shadow hover:shadow-xl hover:shadow-orange-300/50 focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2",
-            isOpen && "ring-2 ring-[#FF8C42] ring-offset-2"
-          )}
-          aria-label={isOpen ? "Close quick actions" : "Open quick actions"}
-          aria-expanded={isOpen}
-          whileTap={{ scale: 0.95 }}
+      {/* FAB Button */}
+      <motion.button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          "fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#FF8C42] text-white shadow-lg shadow-orange-300/40 transition-shadow hover:shadow-xl hover:shadow-orange-300/50 focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2",
+          isOpen && "ring-2 ring-[#FF8C42] ring-offset-2"
+        )}
+        aria-label={isOpen ? "Close quick actions" : "Open quick actions"}
+        aria-expanded={isOpen}
+        whileTap={{ scale: 0.95 }}
+      >
+        <motion.div
+          animate={{ rotate: isOpen ? 45 : 0 }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
         >
-          <motion.div
-            animate={{ rotate: isOpen ? 45 : 0 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-          >
-            {isOpen ? (
-              <X className="h-6 w-6" strokeWidth={2.5} />
-            ) : (
-              <span className="text-2xl font-light leading-none">+</span>
-            )}
-          </motion.div>
-        </motion.button>
-      </div>
+          {isOpen ? (
+            <X className="h-6 w-6" strokeWidth={2.5} />
+          ) : (
+            <span className="text-2xl font-light leading-none">+</span>
+          )}
+        </motion.div>
+      </motion.button>
     </>
   )
 }
