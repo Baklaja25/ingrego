@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { openai } from "@/lib/openai"
+import { rateLimit, getRateLimitIdentifier } from "@/lib/rate-limit"
 
 const requestSchema = z.object({
-  imageUrl: z.string().url().optional(),
   imageBase64: z.string().optional(),
 }).refine(
-  (data) => data.imageUrl || data.imageBase64,
+  (data) => data.imageBase64,
   {
-    message: "Either imageUrl or imageBase64 must be provided",
-    path: ["imageUrl"],
+    message: "imageBase64 must be provided",
+    path: ["imageBase64"],
   }
 )
 
@@ -35,6 +35,32 @@ const INGREDIENT_SCHEMA = {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting: 10 requests per minute per IP/user
+    const identifier = getRateLimitIdentifier(request)
+    const rateLimitResult = rateLimit({
+      maxRequests: 10,
+      windowMs: 60 * 1000, // 1 minute
+      identifier,
+    })
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded. Please try again later.",
+          retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000),
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)),
+            "X-RateLimit-Limit": "10",
+            "X-RateLimit-Remaining": String(rateLimitResult.remaining),
+            "X-RateLimit-Reset": String(rateLimitResult.resetTime),
+          },
+        }
+      )
+    }
+
     // Check if OpenAI API key is configured
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
@@ -53,25 +79,79 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { imageUrl, imageBase64 } = validatedFields.data
+    const { imageBase64 } = validatedFields.data
 
-    // Preprocess image URL
-    let imageInput: string
-    if (imageBase64) {
-      // Ensure proper data URL format
-      if (imageBase64.startsWith("data:")) {
-        imageInput = imageBase64
-      } else {
-        imageInput = `data:image/jpeg;base64,${imageBase64}`
-      }
-    } else if (imageUrl) {
-      imageInput = imageUrl
-    } else {
+    if (!imageBase64) {
       return NextResponse.json(
         { error: "No image provided" },
         { status: 400 }
       )
     }
+
+    // Validate base64 format
+    let base64Data: string
+    let mimeType: string = "image/jpeg"
+
+    if (imageBase64.startsWith("data:")) {
+      // Parse data URL: data:image/jpeg;base64,<data>
+      const match = imageBase64.match(/^data:image\/(jpeg|jpg|png|webp|gif);base64,(.+)$/i)
+      if (!match) {
+        return NextResponse.json(
+          { error: "Invalid data URL format. Must be: data:image/<type>;base64,<data>" },
+          { status: 400 }
+        )
+      }
+      mimeType = `image/${match[1].toLowerCase()}`
+      base64Data = match[2]
+    } else {
+      // Assume raw base64, default to JPEG
+      base64Data = imageBase64
+    }
+
+    // Validate base64 string format
+    const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/
+    if (!base64Regex.test(base64Data)) {
+      return NextResponse.json(
+        { error: "Invalid base64 format" },
+        { status: 400 }
+      )
+    }
+
+    // Validate base64 length (reasonable image size: max ~10MB when decoded)
+    const maxBase64Length = 10 * 1024 * 1024 * 1.33 // ~10MB * 1.33 (base64 overhead)
+    if (base64Data.length > maxBase64Length) {
+      return NextResponse.json(
+        { error: "Image too large. Maximum size is 10MB" },
+        { status: 400 }
+      )
+    }
+
+    // Decode and validate it's actually an image by checking magic bytes
+    try {
+      const buffer = Buffer.from(base64Data, "base64")
+      
+      // Check magic bytes for image formats
+      const isJPEG = buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF
+      const isPNG = buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47
+      const isGIF = buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46
+      const isWebP = buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46
+      
+      if (!isJPEG && !isPNG && !isGIF && !isWebP) {
+        return NextResponse.json(
+          { error: "Invalid image format. Only JPEG, PNG, WebP, and GIF are supported." },
+          { status: 400 }
+        )
+      }
+
+    } catch (error) {
+      return NextResponse.json(
+        { error: "Failed to decode base64 image" },
+        { status: 400 }
+      )
+    }
+
+    // Reconstruct data URL with validated format
+    const imageInput = `data:${mimeType};base64,${base64Data}`
 
     // Create timeout promise (10 seconds for API call)
     const timeoutPromise = new Promise((_, reject) => {

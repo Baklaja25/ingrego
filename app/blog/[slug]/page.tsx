@@ -2,6 +2,7 @@ import Image from "next/image"
 import { notFound } from "next/navigation"
 import { remark } from "remark"
 import html from "remark-html"
+import DOMPurify from "isomorphic-dompurify"
 import { getAllPosts, getPostBySlug } from "@/lib/blog"
 import { BlogCard } from "@/components/blog/BlogCard"
 import { Header } from "@/components/header"
@@ -39,7 +40,13 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     .slice(0, 2)
 
   const processed = await remark().use(html).process(post.content)
-  const contentHtml = processed.toString()
+  const rawHtml = processed.toString()
+  // Sanitize HTML to prevent XSS attacks
+  const contentHtml = DOMPurify.sanitize(rawHtml, {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre', 'img'],
+    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class'],
+    ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|data):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
+  })
 
   return (
     <>
