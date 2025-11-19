@@ -33,14 +33,17 @@ const actions = [
   },
 ] as const
 
-// Calculate positions for action circles in a semi-circle pattern
-// Positioned to stay within screen bounds, especially on mobile
+// Calculate positions for action circles in a compact semi-circle pattern
+// Positioned to stay well within screen bounds, especially on mobile
 const getActionPosition = (index: number, total: number) => {
-  // Adjust angle to spread more upward and leftward (away from screen edges)
-  const angle = (index * Math.PI) / (total + 1) - Math.PI / 2 // Start from top
-  const radius = 65 // Reduced radius to keep circles closer and within screen
+  // Narrower angle range to keep circles more compact and away from screen edges
+  // Start from top-left and spread in a tighter arc
+  const angleRange = Math.PI * 0.6 // 60% of half circle (108 degrees total)
+  const startAngle = -Math.PI / 2 - angleRange / 2 // Start more to the left
+  const angle = startAngle + (index * angleRange) / (total - 1)
+  const radius = 55 // Compact radius to keep circles close to FAB
   const x = Math.cos(angle) * radius
-  const y = Math.sin(angle) * radius - 35 // More upward offset to keep within screen
+  const y = Math.sin(angle) * radius - 40 // Strong upward offset to keep within screen
   return {
     x,
     y,
@@ -124,10 +127,10 @@ export function QuickActionsFab() {
                       ease: "easeOut",
                     }}
                     onClick={() => handleActionClick(action.href)}
-                    className="absolute flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
+                    className="absolute flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#FF8C42] focus:ring-offset-2"
                     aria-label={`${action.label}: ${action.description}`}
                   >
-                    <Icon className="h-5 w-5 text-[#FF8C42]" />
+                    <Icon className="h-4 w-4 text-[#FF8C42]" />
                   </motion.button>
                 )
               })}
