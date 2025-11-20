@@ -1,6 +1,18 @@
 import { MetadataRoute } from "next"
 import { getAllPosts } from "@/lib/blog"
 
+/**
+ * Dynamic sitemap generator (fallback).
+ * 
+ * NOTE: This is a fallback. The primary sitemap is generated manually via:
+ *   npm run sitemap:generate
+ * 
+ * The static file at public/sitemap.xml takes precedence and is served automatically.
+ * This dynamic route only runs if the static file doesn't exist.
+ * 
+ * To update the sitemap after adding a new blog article, run:
+ *   npm run sitemap:generate
+ */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl =
     process.env.NEXT_PUBLIC_APP_URL ||
@@ -42,7 +54,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // Blog posts
+  // Blog posts - only include posts that exist
   let blogPosts: MetadataRoute.Sitemap = []
   try {
     const posts = getAllPosts()
