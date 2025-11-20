@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Camera, ChefHat, Sparkles, CalendarDays } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-// Action buttons configuration
+// Action buttons configuration - all opening upward in a semi-circle
 const actions = [
   {
     label: "Scan",
@@ -13,23 +13,23 @@ const actions = [
     href: "/scan",
     icon: Camera,
     translateX: 0,
-    translateY: -90, // Top
+    translateY: -90, // Top center
   },
   {
     label: "Recipes",
     description: "Suggest recipes",
     href: "/",
     icon: Sparkles,
-    translateX: 90, // Right
-    translateY: 0,
+    translateX: 64, // Top right (diagonal)
+    translateY: -64,
   },
   {
     label: "Planner",
     description: "Meal planner",
     href: "/meal-planner",
     icon: CalendarDays,
-    translateX: 0,
-    translateY: 90, // Bottom
+    translateX: -64, // Top left (diagonal)
+    translateY: -64,
   },
   {
     label: "Cook Mode",
