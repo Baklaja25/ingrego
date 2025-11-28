@@ -19,7 +19,8 @@
     "rls:enable": "tsx scripts/enable-rls-mealplan.ts",
     "rls:enable-all": "tsx scripts/enable-rls-all-tables.ts",
     "rls:fix": "tsx scripts/fix-rls-security-issues.ts",
-    "security:fix-function": "tsx scripts/fix-function-search-path.ts"
+    "security:fix-function": "tsx scripts/fix-function-search-path.ts",
+    "rls:create-policies": "tsx scripts/create-missing-rls-policies.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.6.0",

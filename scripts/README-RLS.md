@@ -64,6 +64,14 @@ npm run rls:enable-all
 
 Checks RLS status on all tables in the public schema and enables RLS on tables that have policies but RLS is disabled.
 
+### Create Missing RLS Policies
+
+```bash
+npm run rls:create-policies
+```
+
+Creates RLS policies for tables that have RLS enabled but no policies defined. This fixes "RLS Enabled No Policy" warnings.
+
 ## RLS Policies
 
 ### Tables with Policies
@@ -86,11 +94,22 @@ Checks RLS status on all tables in the public schema and enables RLS on tables t
 - UserRecipe update owner - Users can only UPDATE their own saved recipes
 - UserRecipe delete owner - Users can only DELETE their own saved recipes
 
-### Tables with RLS Enabled (No Policies Yet)
+### Tables with RLS Enabled and Policies
 
-- **Recipe** - Public recipe data (RLS enabled for future policy implementation)
-- **User** - User accounts (RLS enabled for future policy implementation)
-- **VerificationToken** - Email verification tokens (RLS enabled for future policy implementation)
+**Recipe** (4 policies):
+- Recipe select public - Public read access for recipes
+- Recipe insert authenticated - Only authenticated users can insert
+- Recipe update authenticated - Only authenticated users can update
+- Recipe delete authenticated - Only authenticated users can delete
+
+**User** (2 policies):
+- User select own - Users can only SELECT their own data
+- User update own - Users can only UPDATE their own data
+
+**VerificationToken** (3 policies):
+- VerificationToken select service - Only service role can read
+- VerificationToken insert service - Only service role can insert
+- VerificationToken delete service - Only service role can delete
 
 ## Function Search Path Security
 
