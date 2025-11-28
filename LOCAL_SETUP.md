@@ -121,3 +121,8 @@ Ako se Prisma Studio otvori bez grešaka, konekcija radi ispravno! 🎉
 
 
 
+
+
+
+
+

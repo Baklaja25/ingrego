@@ -106,3 +106,5 @@ ${allPages
 // Run the script
 generateSitemap()
 
+
+

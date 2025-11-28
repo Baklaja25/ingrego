@@ -50,7 +50,9 @@ export async function generateRecipesFromIngredients(
   options: GenerateRecipeOptions = {}
 ) {
   const { diet, userId } = options
-  const cacheKey = normalizeIngredients(ingredients)
+  // Include diet in cache key to ensure different diets get different cached recipes
+  const normalizedIngredients = normalizeIngredients(ingredients)
+  const cacheKey = `${normalizedIngredients}|${diet || 'none'}`
 
   let recipes: any[] = []
 

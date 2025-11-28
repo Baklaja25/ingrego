@@ -93,3 +93,8 @@ Ako ova skripta radi, problem je u Next.js cache-u ili Prisma Client-u koji treb
 
 
 
+
+
+
+
+

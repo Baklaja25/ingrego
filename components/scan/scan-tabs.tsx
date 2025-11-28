@@ -79,7 +79,7 @@ export function ScanTabs() {
       // Small delay to ensure video element is mounted in DOM
       const timer = setTimeout(() => {
         if (videoRef.current) {
-          checkCameraPermission()
+      checkCameraPermission()
         }
       }, 200)
       return () => clearTimeout(timer)
@@ -366,8 +366,8 @@ export function ScanTabs() {
                 playsInline
                 muted
                 className="w-full h-full object-cover"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
               />
               <canvas ref={canvasRef} className="hidden" />
               
@@ -393,63 +393,63 @@ export function ScanTabs() {
           {/* Captured Image Preview */}
           {capturedImage && (
             <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-              <Image
-                src={capturedImage}
-                alt="Captured"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                unoptimized
-              />
-              <button
+                        <Image
+                          src={capturedImage}
+                          alt="Captured"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          className="object-cover"
+                          unoptimized
+                        />
+                        <button
                 type="button"
-                onClick={resetCamera}
+                          onClick={resetCamera}
                 className="absolute top-3 right-3 h-9 w-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-md"
-                aria-label="Retake photo"
-              >
+                          aria-label="Retake photo"
+                        >
                 <X className="h-4 w-4 text-[#0F172A]" />
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+                        </button>
+                </div>
+                )}
+              </div>
+            )}
 
       {/* Upload Preview */}
       {activeTab === "upload" && imageUrl && (
         <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-          <Image
-            src={imageUrl}
-            alt="Uploaded"
+                <Image
+                  src={imageUrl}
+                  alt="Uploaded"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
             className="object-contain"
-            unoptimized
-          />
-          <button
+                  unoptimized
+                />
+                <button
             type="button"
-            onClick={() => {
-              setImageUrl(null)
-              setCapturedImage(null)
-              setIngredients([])
-              if (fileInputRef.current) {
-                fileInputRef.current.value = ""
-              }
-            }}
+                  onClick={() => {
+                    setImageUrl(null)
+                    setCapturedImage(null)
+                    setIngredients([])
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = ""
+                    }
+                  }}
             className="absolute top-3 right-3 h-9 w-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors shadow-md"
-            aria-label="Remove image"
-          >
+                  aria-label="Remove image"
+                >
             <X className="h-4 w-4 text-[#0F172A]" />
-          </button>
+                </button>
         </div>
-      )}
+            )}
 
       {/* Detection Loading State */}
-      {isDetecting && (
+            {isDetecting && (
         <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 rounded-xl px-4 py-3 border border-slate-100">
           <Loader2 className="h-4 w-4 animate-spin text-[#FF8C42]" />
           <span>Detecting ingredients…</span>
-        </div>
-      )}
+              </div>
+            )}
     </div>
   )
 }
