@@ -92,12 +92,38 @@ Checks RLS status on all tables in the public schema and enables RLS on tables t
 - **User** - User accounts (RLS enabled for future policy implementation)
 - **VerificationToken** - Email verification tokens (RLS enabled for future policy implementation)
 
+## Function Search Path Security
+
+### Fix Function Search Path
+
+```bash
+npm run security:fix-function
+```
+
+Fixes the `recipecache_set_updated_at` function to have a fixed `search_path`, preventing SQL injection attacks.
+
 ## Manual SQL (Supabase Dashboard)
 
 If you need to enable RLS manually in Supabase SQL Editor:
 
 ```sql
 ALTER TABLE "MealPlan" ENABLE ROW LEVEL SECURITY;
+```
+
+To fix function search_path:
+
+```sql
+CREATE OR REPLACE FUNCTION public.recipecache_set_updated_at()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  NEW."updatedAt" = CURRENT_TIMESTAMP;
+  RETURN NEW;
+END;
+$$;
 ```
 
 ## Migration
