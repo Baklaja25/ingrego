@@ -91,6 +91,31 @@ If you still get connection errors:
    - **Direct connection** → Copy the URI (use for `DIRECT_URL`)
 3. Replace `[YOUR-PASSWORD]` in the copied strings with your actual password
 
+## Row-Level Security (RLS)
+
+Row-Level Security is enabled on the `MealPlan` table to provide additional security. 
+
+### Enable/Verify RLS
+
+```bash
+# Enable RLS (if not already enabled)
+npm run rls:enable
+
+# Verify RLS status
+npm run rls:verify
+```
+
+### Important Notes
+
+⚠️ **Prisma Client with service role key bypasses RLS**
+
+- Your application uses Prisma Client with a service role connection string
+- Service role connections bypass RLS policies
+- **Application-level security is still enforced** - all API routes check `session.user.id`
+- RLS provides additional protection for direct SQL queries and future integrations
+
+For more details, see [scripts/README-RLS.md](./scripts/README-RLS.md)
+
 
 
 

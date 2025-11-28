@@ -14,7 +14,9 @@
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "sitemap:generate": "tsx scripts/generate-sitemap.ts",
-    "cache:clear": "tsx scripts/clear-recipe-cache.ts"
+    "cache:clear": "tsx scripts/clear-recipe-cache.ts",
+    "rls:verify": "tsx scripts/verify-rls-mealplan.ts",
+    "rls:enable": "tsx scripts/enable-rls-mealplan.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.6.0",
