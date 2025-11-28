@@ -2,7 +2,16 @@
 
 ## Overview
 
-Row-Level Security (RLS) is enabled on the `MealPlan` table in Supabase to provide an additional layer of security. This ensures that users can only access their own meal plans.
+Row-Level Security (RLS) is enabled on multiple tables in Supabase to provide an additional layer of security. This ensures that users can only access their own data.
+
+## Tables with RLS Enabled
+
+- **MealPlan** - User meal plans (4 policies)
+- **Scan** - User ingredient scans (4 policies)
+- **UserRecipe** - User saved recipes (4 policies)
+- **Recipe** - Recipe data (RLS enabled, policies may be added)
+- **User** - User accounts (RLS enabled, policies may be added)
+- **VerificationToken** - Email verification tokens (RLS enabled, policies may be added)
 
 ## Important Notes
 
@@ -15,7 +24,19 @@ Row-Level Security (RLS) is enabled on the `MealPlan` table in Supabase to provi
 
 ## Available Scripts
 
-### Enable RLS
+### Fix All RLS Security Issues
+
+```bash
+npm run rls:fix
+```
+
+**Recommended for fixing Supabase linter issues.** This script:
+- Enables RLS on all tables that need it (Scan, UserRecipe, Recipe, User, VerificationToken)
+- Fixes "Policy Exists RLS Disabled" errors
+- Fixes "RLS Disabled in Public" errors
+- Verifies the changes
+
+### Enable RLS on Specific Table
 
 ```bash
 npm run rls:enable
@@ -33,16 +54,43 @@ Enables Row-Level Security on the `MealPlan` table. This script:
 npm run rls:verify
 ```
 
-Verifies that RLS is enabled and lists all active policies.
+Verifies that RLS is enabled on `MealPlan` and lists all active policies.
+
+### Check All Tables
+
+```bash
+npm run rls:enable-all
+```
+
+Checks RLS status on all tables in the public schema and enables RLS on tables that have policies but RLS is disabled.
 
 ## RLS Policies
 
-The following policies are defined on the `MealPlan` table:
+### Tables with Policies
 
-- **MealPlan select owner** - Users can only SELECT their own meal plans
-- **MealPlan insert owner** - Users can only INSERT meal plans with their own userId
-- **MealPlan update owner** - Users can only UPDATE their own meal plans
-- **MealPlan delete owner** - Users can only DELETE their own meal plans
+**MealPlan** (4 policies):
+- MealPlan select owner - Users can only SELECT their own meal plans
+- MealPlan insert owner - Users can only INSERT meal plans with their own userId
+- MealPlan update owner - Users can only UPDATE their own meal plans
+- MealPlan delete owner - Users can only DELETE their own meal plans
+
+**Scan** (4 policies):
+- Scan select owner - Users can only SELECT their own scans
+- Scan insert owner - Users can only INSERT scans with their own userId
+- Scan update owner - Users can only UPDATE their own scans
+- Scan delete owner - Users can only DELETE their own scans
+
+**UserRecipe** (4 policies):
+- UserRecipe select owner - Users can only SELECT their own saved recipes
+- UserRecipe insert owner - Users can only INSERT saved recipes with their own userId
+- UserRecipe update owner - Users can only UPDATE their own saved recipes
+- UserRecipe delete owner - Users can only DELETE their own saved recipes
+
+### Tables with RLS Enabled (No Policies Yet)
+
+- **Recipe** - Public recipe data (RLS enabled for future policy implementation)
+- **User** - User accounts (RLS enabled for future policy implementation)
+- **VerificationToken** - Email verification tokens (RLS enabled for future policy implementation)
 
 ## Manual SQL (Supabase Dashboard)
 
